@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 interface Review {
   id: number;
@@ -39,6 +40,17 @@ export default function MovieDetail() {
     }
   };
 
+  const handleDeleteReview = async (reviewId: number) => {
+    if (confirm("Are you sure you want to delete this review?")) {
+      try {
+        await axios.delete(`/api/reviews/${reviewId}`); // Call your delete API
+        alert('Review deleted successfully!');
+        fetchMovie(); // Refresh the movie data to update the reviews list
+      } catch (error) {
+        console.error('Error deleting review:', error);
+      }
+    }
+  };
   
 
   if (!movie) return <div>Loading...</div>;
@@ -88,11 +100,13 @@ export default function MovieDetail() {
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-[#6558f5]">{review.rating}/10</p>
-                <div className="flex justify-end mt-2 space-x-2">
+                <div className="flex justify-end mt-2 space-x-4">
+                <Link href={`/movie/${movie.id}/review/${review.id}/edit`}>
                   <button className="text-gray-600 hover:text-gray-800">
                     <i className="fas fa-edit"></i>
                   </button>
-                  <button className="text-gray-600 hover:text-gray-800">
+                  </Link>
+                  <button className="text-gray-600 hover:text-gray-800" onClick={() => handleDeleteReview(review.id)}>
                     <i className="fas fa-trash"></i>
                   </button>
                 </div>
